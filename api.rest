@@ -3,12 +3,12 @@
 # Content-Type: application/json
 
 # {
-#         "username": "demo2",
-#         "password": "demo2"
+#         "username": "demoถถถ",
+#         "password": "demoถถถ"
 # }
 
 # pdate User (PUT)
-# PUT http://localhost:3000/user/2
+# PUT http://localhost:3000/user/4
 # Content-Type: application/json
 
 # {
@@ -17,7 +17,7 @@
 # }
 
 # Delete User (DELETE)
-DELETE http://localhost:3000/user/3
+DELETE http://localhost:3000/user/4
 
 
 

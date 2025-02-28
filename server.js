@@ -12,19 +12,16 @@ app.get('/', (req, res) => {
 
 // Read all users
 app.get('/user', async (req, res) => {
-    const data = await prisma.user.findMany();
-    const finalData = data.map(record => {
-        delete record.password;
-        return record;
-    });
-    res.json({ message: 'ok', data: finalData });
+    const users = await prisma.user.findMany();
+    users.forEach(user => delete user.password); // ลบ password ก่อนส่งกลับ
+    res.json({ message: 'ok', data: users });
 });
 
 // Read user by ID
 app.get('/user/:id', async (req, res) => {
     const user = await prisma.user.findUnique({
-        where: { id: Number(req.params.id) },
-        select: { id: true, username: true } // ไม่ดึง password
+        where: { id: +req.params.id }, // ใช้ + เพื่อแปลงเป็น number
+        select: { id: true, username: true },
     });
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json({ message: 'ok', data: user });
@@ -33,52 +30,28 @@ app.get('/user/:id', async (req, res) => {
 // Create new user
 app.post('/user', async (req, res) => {
     const { username, password } = req.body;
-    const response = await prisma.user.create({
-        data: { username, password }
-    });
-    res.json({ message: 'User created successfully', data: response });
+    const user = await prisma.user.create({ data: { username, password } });
+    res.json({ message: 'User created successfully', data: user });
 });
-
 
 // Update user
 app.put('/user/:id', async (req, res) => {
     const { username, password } = req.body;
-
     try {
-        // ตรวจสอบว่าผู้ใช้มีอยู่จริงหรือไม่
-        const existingUser = await prisma.user.findUnique({
-            where: { id: Number(req.params.id) },
-        });
-
-        if (!existingUser) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        // แสดงข้อมูลผู้ใช้ก่อนการอัพเดต
-        console.log('Existing User:', existingUser);
-
-        // หากผู้ใช้มีอยู่แล้ว ให้ดำเนินการอัพเดต
         const updatedUser = await prisma.user.update({
-            where: { id: Number(req.params.id) },
+            where: { id: +req.params.id },
             data: { username, password },
         });
-
-        // แสดงข้อมูลผู้ใช้หลังการอัพเดต
-        console.log('Updated User:', updatedUser);
-
         res.json({ message: 'User updated successfully', data: updatedUser });
     } catch (error) {
-        console.error('Error:', error); // แสดงข้อผิดพลาดหากมี
         res.status(400).json({ message: 'Error updating user', error: error.message });
     }
 });
 
-
-
 // Delete user
 app.delete('/user/:id', async (req, res) => {
     try {
-        await prisma.user.delete({ where: { id: Number(req.params.id) } });
+        await prisma.user.delete({ where: { id: +req.params.id } });
         res.json({ message: 'User deleted successfully' });
     } catch (error) {
         res.status(400).json({ message: 'Error deleting user', error: error.message });
