@@ -1,0 +1,29 @@
+# Create User
+# POST http://localhost:3000/user
+# Content-Type: application/json
+
+# {
+#         "username": "demo2",
+#         "password": "demo2"
+# }
+
+# pdate User (PUT)
+# PUT http://localhost:3000/user/2
+# Content-Type: application/json
+
+# {
+#     "username": "updatedUser",
+#     "password": "newpass"
+# }
+
+# Delete User (DELETE)
+DELETE http://localhost:3000/user/3
+
+
+
+
+
+
+# curl -X POST http://localhost:3000/user \-H "Content-Type: application/json" \-d '{"username": "testuser", "password": "12345"}'
+# curl -X PUT http://localhost:3000/user/1 \-H "Content-Type: application/json" \-d '{"username": "updatedUser", "password": "newpass"}'
+# Invoke-RestMethod -Uri "http://localhost:3000/user/1" -Method Put -Headers @{"Content-Type"="application/json"} -Body '{"username": "updatedUser", "password": "newpass"}'
