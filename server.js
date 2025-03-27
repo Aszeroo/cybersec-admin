@@ -13,18 +13,18 @@ app.get("/", (req, res) => {
   res.send("Hello World!!");
 });
 
-// ดึงข้อมูล User
+// ดึงข้อมูล User (แสดงรหัสผ่านที่เข้ารหัส)
 app.get("/user", async (req, res) => {
   try {
-    const data = await prisma.user.findMany();
-    const finalData = data.map((record) => {
-      // ถอดรหัสรหัสผ่าน
-      const bytes = CryptoJS.AES.decrypt(record.password, secretKey);
-      record.password = bytes.toString(CryptoJS.enc.Utf8);
-      return record;
+    const data = await prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        password: true, // แสดง password ที่เข้ารหัสแล้ว
+      },
     });
 
-    res.json({ message: "OK", data: finalData });
+    res.json({ message: "OK", data });
   } catch (error) {
     res.status(500).json({ message: "Error fetching users", error: error.message });
   }
@@ -45,7 +45,7 @@ app.post("/user", async (req, res) => {
       data: { username, password: encodedPassword },
     });
 
-    res.json({ message: "User added successfully", data: response });
+    res.json({ message: "User added successfully", data: { id: response.id, username: response.username, password: encodedPassword } });
   } catch (error) {
     res.status(500).json({ message: "Error adding user", error: error.message });
   }
@@ -68,13 +68,13 @@ app.put("/user/:id", async (req, res) => {
       data: { username, password: encodedPassword },
     });
 
-    res.json({ message: "User updated successfully", data: response });
+    res.json({ message: "User updated successfully", data: { id: response.id, username: response.username, password: encodedPassword } });
   } catch (error) {
     res.status(500).json({ message: "Error updating user", error: error.message });
   }
 });
 
-// ค้นหา User
+// ค้นหา User (แสดงรหัสผ่านที่เข้ารหัสแล้ว)
 app.get("/user/search", async (req, res) => {
   try {
     const { q } = req.query;
@@ -82,8 +82,19 @@ app.get("/user/search", async (req, res) => {
       return res.status(400).json({ message: "Query parameter 'q' is required" });
     }
 
-    const data = await prisma.$queryRaw`SELECT id, username FROM User WHERE username LIKE ${q + "%"}`;
-    
+    const data = await prisma.user.findMany({
+      where: {
+        username: {
+          startsWith: q,
+        },
+      },
+      select: {
+        id: true,
+        username: true,
+        password: true, // แสดง password ที่เข้ารหัสแล้ว
+      },
+    });
+
     res.json({ message: "OK", data });
   } catch (error) {
     res.status(500).json({ message: "Error searching users", error: error.message });
