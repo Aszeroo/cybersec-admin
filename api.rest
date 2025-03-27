@@ -1,29 +1,24 @@
-# Create User
-# POST http://localhost:3000/user
-# Content-Type: application/json
+### Create User
+POST  http://localhost:3000/user
+Content-Type: application/json
 
-# {
-#         "username": "demoถถถ",
-#         "password": "demoถถถ"
-# }
+{
+        "username": "demo12",
+        "password": "demo12"
+}
+    
+### Update User
+PUT http://localhost:3000/user/7
+Content-Type: application/json
 
-# pdate User (PUT)
-# PUT http://localhost:3000/user/4
-# Content-Type: application/json
+{
+    "username": "demo12edit",
+    "password": "newpassword"
+}
 
-# {
-#     "username": "updatedUser",
-#     "password": "newpass"
-# }
+### Delete User
+DELETE http://localhost:3000/user/6
 
-# Delete User (DELETE)
-DELETE http://localhost:3000/user/4
-
-
-
-
-
-
-# curl -X POST http://localhost:3000/user \-H "Content-Type: application/json" \-d '{"username": "testuser", "password": "12345"}'
-# curl -X PUT http://localhost:3000/user/1 \-H "Content-Type: application/json" \-d '{"username": "updatedUser", "password": "newpass"}'
-# Invoke-RestMethod -Uri "http://localhost:3000/user/1" -Method Put -Headers @{"Content-Type"="application/json"} -Body '{"username": "updatedUser", "password": "newpass"}'
+### Search User
+GET http://localhost:3000/user/search?q=d
+Content-Type: application/json
